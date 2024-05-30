@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../patials/head"); %>
+    <title>Update Chapter</title>
+    <link href="/styleUpdateChapter/style.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../patials/header'); %>
+    <main>
+        <div class="container_content">
+            <%- include('../patials/leftNavbar'); %>
+            <div class="main_content">
+                <div class="section_information">
+                    <div class="infor_chapter">
+                        <form action="/adminDashboard/<%= idStory %>/<%= titleStory %>/<%= nameChapter %>/updateChapter" method="post" id="formUpdateChapter" enctype="multipart/form-data">
+                            <label>Tên chương: <input type="text" name="nameChapter" id="nameChapter" value="<%= nameChapter %>"></label>
+                            <input type="hidden" name="idStory" id="idStory" value="<%= idStory %>"/> 
+                            <input type="hidden" name="idChapter" id="idChapter" value="<%= idChapter %>"/> 
+                            <input type="hidden" name="nameImageInChapter" id="nameImageInChapter" value="">
+                            <input type="file" id="uploadImage" name="uploadImage" accept="image/*" multiple style="display: none;">
+                        </form>
+                    </div>
+                    <div class="addImage" id="addImage">
+                        <div class="imagePreview" id="imagePreview">
+                            
+                        </div>
+                        <button id="addImage" onclick="document.getElementById('uploadImage').click();">Upload Image</button>
+                    </div>
+                    <button type="submit" id="addChapterBtn" onclick="submitForm()">UPDATE CHAPTER</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        var listImageInChapter = JSON.parse('<%- JSON.stringify(listImageInChapter) %>');
+        var idStory = JSON.parse('<%- JSON.stringify(idStory) %>');
+        var titleStory = JSON.parse('<%- JSON.stringify(titleStory) %>');
+        var nameChapter = JSON.parse('<%- JSON.stringify(nameChapter) %>');
+
+        listImageInChapter.sort(function(a, b) {
+            return a.filename.localeCompare(b.filename);
+        });
+        var listImage = document.getElementById("imagePreview");
+        var nameImageInChapter = document.getElementById("nameImageInChapter");
+        for(let i = 0; i < listImageInChapter.length; i++){
+            let divImgElement = document.createElement("div");
+            divImgElement.classList.add("imgDiv");
+
+            // Tạo một thẻ img mới để hiển thị ảnh
+            let imgElement = document.createElement("img");
+            imgElement.src = listImageInChapter[i].path;
+            
+
+            //Nút xóa cho mỗi ảnh
+            let divImgElement_delBtn = document.createElement("i");
+            divImgElement_delBtn.classList.add("fa", "fa-times-circle");
+            divImgElement_delBtn.style.cursor = "pointer";
+            
+            divImgElement.appendChild(imgElement);
+            divImgElement.appendChild(divImgElement_delBtn);
+
+            // Tạo một hàm xử lý sự kiện click riêng biệt cho mỗi nút xóa
+            (function(imgElement) {
+                divImgElement_delBtn.addEventListener("click", function() {
+                    listImage.removeChild(divImgElement);
+                    nameImageInChapter.value += listImageInChapter[i].filename + '/';
+                });
+            })(imgElement);
+
+            // Thêm divImg vào vùng xem trước
+            listImage.appendChild(divImgElement);
+        }
+
+        //------------------------------UPLOAD MULTIPLE IMAGE------------------------------
+        
+        
+        document.getElementById("uploadImage").addEventListener("input", function() {
+            var fileInput = this;
+            var imagePreview = document.getElementById("imagePreview");
+            var files = fileInput.files;
+            
+            if (files.length > 0) {
+                var filesArray = Array.from(files);
+
+                // Sắp xếp các tệp theo thứ tự tên
+                filesArray.sort(function(a, b) {
+                    return a.name.localeCompare(b.name);
+                });
+
+                for (var i = 0; i < filesArray.length; i++) {
+                    var file = filesArray[i];
+                    var reader = new FileReader();
+                    
+                    reader.onload = (function(file) {
+                        return function(event) {
+                            var divImgElement = document.createElement("div");
+                            divImgElement.classList.add("imgDiv");
+
+                            // Tạo một thẻ img mới để hiển thị ảnh
+                            var imgElement = document.createElement("img");
+                            imgElement.src = event.target.result;
+
+
+                            //Nút xóa cho mỗi ảnh
+                            var divImgElement_delBtn = document.createElement("i");
+                            divImgElement_delBtn.classList.add("fa", "fa-times-circle");
+                            divImgElement_delBtn.style.cursor = "pointer";
+                            
+                            divImgElement.appendChild(imgElement);
+                            divImgElement.appendChild(divImgElement_delBtn);
+
+                            // Tạo một hàm xử lý sự kiện click riêng biệt cho mỗi nút xóa
+                            (function(imgElement) {
+                                divImgElement_delBtn.addEventListener("click", function() {
+                                    imagePreview.removeChild(divImgElement);
+                                });
+                            })(imgElement);
+
+                            // Thêm divImg vào vùng xem trước
+                            imagePreview.appendChild(divImgElement);
+                        };
+                    })(file);
+                    
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                // Người dùng chưa chọn tệp
+                console.log("Bạn chưa chọn tệp ảnh.");
+            }
+        });
+
+        //------------------------------SUBMIT FORM------------------------------
+        function submitForm(){
+            // var files = Array.from(document.getElementById("uploadImage").files);
+            // files.sort(function(a, b) {
+            //     return a.name.localeCompare(b.name);
+            // });
+            formUpdateChapter.submit();
+        }
+
+        function uploadFile(file) {
+            var formData = new FormData();
+            formData.append('uploadImage', file); // Thêm tệp vào FormData
+
+            // Gửi yêu cầu POST bằng phương thức fetch
+            return fetch(`/adminDashboard/${idStory}/${titleStory}/${nameChapter}/updateChapter`, {
+                method: 'POST',
+                body: formData
+            });
+        }
+    </script>
+</body>
+</html>

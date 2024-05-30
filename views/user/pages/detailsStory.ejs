@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../patials/head"); %>
+    <link href="/styleDetailStoryUser/style.css" type="text/css" rel="stylesheet">
+    <title>Trang bìa</title>
+</head>
+<body>
+    <%- include('../patials/header'); %>
+    <main>
+        <div class="container_content">
+            <%- include('../patials/leftNavbar'); %>
+            <div class="main_content">
+                <div class="section_information">
+                    <div class="story">
+                        <div class="cover_story">
+                            <img id="imagePreview" src="<%= storyData.ImagePath%>">
+                        </div>
+                        <div class="infor_story">
+                            <label class="inf">
+                                Tên truyện: 
+                                <p><%= storyData.Title %></p>
+                            </label>
+                            <label>
+                                Tác giả: 
+                                <div class="author_btn">
+                                    <a href="#"><%= storyData.Author %></a>
+                                </div>
+                            </label>
+                            <label>
+                                Thể loại:
+                                <div class="listGenre" id="listGenre"></div>
+                            </label>
+                            <div class="like_and_share">
+                                <p>
+                                    <i class="fas fa-heart" id="like_Btn"></i>
+                                    Yêu thích
+                                </p>
+                                <p>
+                                    <i class="fa fa-share" id="share_Btn"></i>
+                                    Chia sẻ
+                                </p>
+                            </div>
+                            <label>
+                                Tóm tắt: 
+                                <textarea name="description" readonly><%= storyData.Description %></textarea>
+                            </label>
+                            <div class="button_action">
+                                <button class="btnRead" id="readFirst">
+                                    <a href="/category/<%= storyData.ID %>/<%= storyData.Title %>/<%= listChapter[0].Title %>">Đọc từ đầu</a>
+                                </button>
+                                <button class="btnRead" id="readLast">
+                                    <a href="/category/<%= storyData.ID %>/<%= storyData.Title %>/<%= listChapter[listChapter.length - 1].Title %>">Đọc mới nhất</a>
+                                </button>
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+                <h3 class="title_section">Danh sách chương:</h3>
+                <div class="section_listChapter" id="listChapter"></div>
+                
+                <div class="section_comments">
+                    <div class="input_comment">
+                        <h4>Nhận xét của độc giả</h4>
+                        <form id="form_add_comment">
+                            <textarea id="comment_context" name="comment" placeholder="Nhập bình luận của bạn"></textarea>
+                            <input type="hidden" id="storyID" name="storyId" value="<%= storyData.ID %>">
+                            <button>Gửi</button>
+                        </form>
+                    </div>
+                    <div id="message"></div>
+                    <div class="commentsList" id="commentList">
+                        <!-- <div class="commentItem">
+                            <div class="imageUser"></div>
+                            <div class="commentInfor">
+                                <div class="comment_author">
+                                    <div class="usernameComment"></div>
+                                    <div class="timeOfComment"></div>
+                                </div>
+                                <div class="comment_content"></div>
+                                <div class="comment_actions"></div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+   
+    <script>
+        var storyData = JSON.parse('<%- JSON.stringify(storyData) %>');
+        var listGenre = JSON.parse('<%- JSON.stringify(listGenre) %>');
+        var allGenre = JSON.parse('<%- JSON.stringify(allGenre) %>');
+        var listChapter = JSON.parse('<%- JSON.stringify(listChapter) %>');
+
+        // Chi tiết mỗi thể loại để thêm vào list
+        var listGenre_div = document.getElementById("listGenre");
+        for(let i = 0; i < listGenre.length; i++){
+            var listGenre_div_item = document.createElement("div");
+            var listGenre_div_item_link = document.createElement("a");
+
+            listGenre_div_item_link.textContent = listGenre[i].Name;
+            listGenre_div_item_link.setAttribute("href", `/category/${listGenre[i].Name}`);
+            
+            listGenre_div_item.appendChild(listGenre_div_item_link);
+            listGenre_div_item.classList.add("genreItem");
+            listGenre_div_item.id = listGenre[i].Name;
+
+            listGenre_div.appendChild(listGenre_div_item);
+        }
+
+        // Màu ngẫu nhiên cho mỗi thể loại
+        var colors = ["#ce3c3c", "#ceac3c", "#9bce3c", "#3cce54", "#3cc9ce", "#3c7bce", "#573cce", "#ac3cce", "#ce3cc2", "#ce3c68"];
+    
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        var itemGenres = document.querySelectorAll('.genreItem');
+
+        itemGenres.forEach(function(item) {
+            item.style.backgroundColor = getRandomColor();
+        });
+
+        
+        //------------------------------LIST CHAPTER------------------------------
+        const section_listChapter = document.getElementById("listChapter");
+        for(let i = 0; i < listChapter.length; i++){
+            section_listChapter.innerHTML += `
+                    <div class="chapter">
+                        <a href="/category/${storyData.ID}/${storyData.Title}/${listChapter[i].Title}">
+                            <p>${listChapter[i].Title}</p>
+                            <p>${listChapter[i].UpdateDate}</p>
+                        </a>
+                    </div>
+                `
+        }
+
+        //------------------------------LIKE BUTTON------------------------------
+        var likeButton = document.getElementById("like_Btn");
+        var isFavorite = JSON.parse('<%- JSON.stringify(isFavorite) %>');
+        if(isFavorite) likeButton.style.color = 'red';
+        else likeButton.style.color = 'white';
+
+        likeButton.addEventListener("click", function(){
+            if(likeButton.style.color === "white") {
+                likeButton.style.color = 'red';
+                const idStory = storyData.ID;
+                const nameStory = storyData.Title;
+    
+                var form = document.createElement("form");
+                form.setAttribute("method", "POST");
+                form.setAttribute("action", `/category/addNewFavoriteStory`);
+    
+                var idInput = document.createElement("input");
+                idInput.setAttribute("type", "hidden");
+                idInput.setAttribute("name", "idStory");
+                idInput.setAttribute("value", idStory);
+    
+                var nameInput = document.createElement("input");
+                nameInput.setAttribute("type", "hidden");
+                nameInput.setAttribute("name", "nameStory");
+                nameInput.setAttribute("value", nameStory);
+                
+                form.appendChild(idInput);
+                form.appendChild(nameInput);
+    
+                document.body.appendChild(form);
+    
+                form.submit();
+            }
+            else {
+                likeButton.style.color = 'white';
+                const idStory = storyData.ID;
+                const nameStory = storyData.Title;
+    
+                var form = document.createElement("form");
+                form.setAttribute("method", "POST");
+                form.setAttribute("action", `/category/deleteFavoriteStory`);
+    
+                var idInput = document.createElement("input");
+                idInput.setAttribute("type", "hidden");
+                idInput.setAttribute("name", "idStory");
+                idInput.setAttribute("value", idStory);
+    
+                var nameInput = document.createElement("input");
+                nameInput.setAttribute("type", "hidden");
+                nameInput.setAttribute("name", "nameStory");
+                nameInput.setAttribute("value", nameStory);
+                
+                form.appendChild(idInput);
+                form.appendChild(nameInput);
+    
+                document.body.appendChild(form);
+    
+                form.submit();
+            }
+        })   
+        
+        //------------------------------SHARE BUTTON------------------------------
+        var shareButton = document.getElementById("share_Btn");
+        shareButton.addEventListener("click", function() {
+            // Lấy đường dẫn hiện tại của trang
+            var currentUrl = window.location.href;
+            
+            // Sao chép đường dẫn vào bộ nhớ đệm
+            navigator.clipboard.writeText(currentUrl)
+                .then(function() {
+                    alert("Đã sao chép đường dẫn!");
+                })
+                .catch(function(err) {
+                    console.error('Lỗi khi sao chép:', err);
+                });
+        });
+
+        //------------------------------ADD COMMENT------------------------------
+        var commentsList = document.getElementById("commentList");
+        document.getElementById("form_add_comment").addEventListener("submit", function(){
+            event.preventDefault();
+            var comment = document.getElementById("comment_context");
+            var commentContext = comment.value;
+            var storyID = document.getElementById("storyID").value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/category/comment", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // document.getElementById("message").innerText = "Bình luận đã được gửi!";
+                        var dateNow = new Date();
+
+                        var day = dateNow.getDate().toString().padStart(2, '0');
+                        var month = (dateNow.getMonth() + 1).toString().padStart(2, '0');
+                        var year = dateNow.getFullYear().toString();
+                        var hours = dateNow.getHours().toString().padStart(2, '0');
+                        var minutes = dateNow.getMinutes().toString().padStart(2, '0');
+
+                        // Tạo chuỗi theo định dạng "dd:MM:yyyy hh:mm:ss"
+                        var formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+                        
+                        commentsList.innerHTML += `
+                            <div class="commentItem">
+                                <div class="imageUser"></div>
+                                <div class="commentInfor">
+                                    <div class="comment_read">
+                                        <div class="comment_author">
+                                            <div class="usernameComment"><%= name %></div>
+                                            <div class="timeOfComment">${formattedDate}</div>
+                                        </div>
+                                        <div class="comment_content">${commentContext}</div>
+                                    </div>
+                                    <div class="comment_actions"></div>
+                                </div>
+                            </div>
+                        `;
+                        comment.value = "";
+                    } else {
+                        // Xử lý lỗi từ server
+                        // document.getElementById("message").innerText = "Đã xảy ra lỗi khi gửi bình luận.";
+                    }
+                }
+            };
+            xhr.send(JSON.stringify({ comment: commentContext, storyId: storyID }));
+        })
+
+        //------------------------------LIST COMMENT------------------------------
+        var allComment = JSON.parse('<%- JSON.stringify(allComment) %>');
+        
+        for(let i = 0; i < allComment.length; i++) {
+            
+            commentsList.innerHTML += `
+                <div class="commentItem">
+                    <div class="imageUser"></div>
+                    <div class="commentInfor">
+                        <div class="comment_read">
+                            <div class="comment_author">
+                                <div class="usernameComment">${allComment[i].Username}</div>
+                                <div class="timeOfComment">${allComment[i].PostDate}</div>
+                                <div class="inChapter">${allComment[i].Title}</div>
+                            </div>
+                            <div class="comment_content">${allComment[i].Content}</div>
+                        </div>
+                        <div class="comment_actions"></div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

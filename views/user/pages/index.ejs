@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link href="/styleIndex/style.css" type="text/css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <%- include("../patials/head"); %>
+</head>
+<body>
+    <%- include('../patials/header'); %>
+    <main>
+        <div class="container_index">
+            <%- include('../patials/leftNavbar'); %>
+            <div class="main_content">
+                <div class="section_first">
+                    <h2>Truyện HOT</h2>
+                    <div class="slide_container swiper">
+                        <div class="slide_content">
+                            <div class="card_wrapper swiper-wrapper" id="card_wrapper">
+                                
+                            </div>
+                            
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <!-- <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div> -->
+
+                    </div>
+                    <div class="seeAll">
+                        <a href="/category">Xem Tất Cả</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+    <script>
+        var swiper = new Swiper(".slide_content", {
+        slidesPerView: 4,
+        // centeredSlides: true,
+        spaceBetween: 30,
+        grabCursor: true,
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+        });
+
+        var stories = JSON.parse('<%- JSON.stringify(stories) %>');
+
+        var card_wrapper = document.getElementById("card_wrapper");
+        for(let i = 0; i < 10; i++){
+            card_wrapper.innerHTML += `
+                <div class="card swiper-slide">
+                    
+                    <div class="image_content">
+                        <span class="overlay"></span>
+                        <div class="card_image">
+                            <img src='${stories[i].ImagePath}' alt="IMAGE" />
+                        </div>
+                    </div>
+                    <div class="card_content">
+                        <a href="/category/${stories[i].ID}/${stories[i].Title}"><p>${stories[i].Title}</p></a>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>

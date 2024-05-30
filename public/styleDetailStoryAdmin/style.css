@@ -1,0 +1,211 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+*{
+    font-family: "Be Vietnam Pro", sans-serif;
+}
+
+.container_content{
+    display: flex;
+    flex-direction: row;
+    background-color: var(--body-color);
+    color: var(--text-color);
+}
+
+.main_content{
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 10px 0 0;
+}
+
+.section_information{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.section_information .story{
+    width: 100%;
+    height: 90%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.story .cover_story{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+        
+    justify-content: flex-start;
+    align-items: center;
+    img{
+        width: 80%;
+        height: auto;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+    button{
+        width: 40%;
+        padding: 10px;
+        font-size: var(--fs-medium);
+        border-radius: 10px;
+        background-color: var(--background-color-button-action);
+        color: var(--text-color);
+        transition: var(--tran-03);
+    }
+}
+
+.cover_story button:hover{
+    background-color: var(--background-color-button-action-hover);
+}
+
+.story .infor_story{
+    width: 50%;
+    form{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .inf{
+        width: 100%;
+    }
+    .listGenre{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .listGenre .genreItem{
+        background-color: rgb(29, 172, 0);
+        border-radius: 20px;
+        height: 40px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 10px 10px 10px 0;
+        padding: 0 10px 0 10px;
+        gap: 10px;
+        p{
+            padding-top: 14px;
+        }
+    }
+    input[type = "text"]{
+        border-radius: 10px;
+        padding-left: 10px;
+        width: 100%;
+    }
+    select{
+        padding: 8px; 
+        font-size: 16px;
+        border: 1px solid #ccc; 
+        border-radius: 5px; 
+        background-color: #f7f7f7; 
+        color: #333; 
+        option {
+            padding: 8px; 
+            font-size: 16px;
+        }
+    }
+    textarea{
+        width: 100%;
+        height: 200px;
+        resize: none;
+        border-radius: 10px;
+    }
+    button{
+        border-radius: 10px;
+        padding: 10px;
+        font-size: var(--fs-medium);
+        margin-left: 30%;
+        margin-top: 10px;
+        background-color: var(--background-color-button-action);
+        color: var(--text-color);
+        transition: var(--tran-03);
+    }
+    i{
+        transition: var(--tran-03);
+    }
+}
+
+.infor_story button:hover{
+    background-color: var(--background-color-button-action-hover);
+}
+
+.infor_story i:hover{
+    color: red;
+}
+
+.title_section{
+    align-self: center;
+    padding-top: 10px;
+}
+
+.section_listChapter{
+    border: none;
+    width: 70%;
+    align-self: center;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: var(--body-color-secondary-2);
+    .chapter{
+        border-radius: 10px;
+        transition: var(--tran-03);
+        a{
+            color: var(--text-color);
+            font-size: var(--fs-small);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        p{
+            padding: 10px;
+        }
+    }
+}
+
+.section_listChapter .chapter:nth-child(odd){
+    background-color: #495058;
+}
+
+.section_listChapter .chapter:nth-child(even){
+    background-color: var(--body-color-secondary-2);
+}
+
+.section_listChapter .chapter:hover{
+    background-color: #616a75;
+}
+
+.action{
+    font-size: var(--fs-small);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    padding-top: 10px;
+    width: 100%;
+    button{
+        border-radius: 10px;
+        padding: 10px;
+        font-size: var(--fs-small);
+        background-color: var(--background-color-button-action);
+        color: var(--text-color);
+        transition: var(--tran-03);
+    }
+    form{
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        input{
+            border-radius: 10px;
+            padding: 10px;
+            width: 100%;
+        }
+    }
+}
+
+.action button:hover{
+    background-color: var(--background-color-button-action-hover);
+}

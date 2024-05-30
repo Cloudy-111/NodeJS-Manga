@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Account</title>
+    <link href="/styleAccount/style.css" type="text/css" rel="stylesheet">
+    <%- include("../patials/head"); %>
+</head>
+<body>
+    <%- include('../patials/header'); %>
+    <main>
+        <div class="container_account">
+            <%- include('../patials/leftNavbar'); %>
+            <div class="main_content">
+                <div class="image_overlay"></div>
+                <div class="avatar_field">
+                    <div class="image_ava"></div>
+                    <div class="change_image">
+                        <button onclick="">CHANGE</button>
+                    </div>
+                </div>
+                <div class="modified_box">
+                    <div class="content_wrap">
+                        <div class="headerForm">
+                            <h2>Modified</h2>
+                        </div>
+                        <hr>
+                        <form action="/account" method="post" id="formModified">
+                            <label>ID <input class="input_field" type="text" name="id" id="input_ID" readonly></label>
+                            <label>Username <input class="input_field" type="text" name="username" id="input_username"></label>
+                            <label>Email <input class="input_field" type="text" name="email" id="input_email" readonly></label>
+                        </form>
+                        <hr>
+                        <div class="button_container">
+                            <button type="submit" onclick="submitForm()" id="upd">Cập nhật</button>
+                            <button type="button" id="chn">Đổi mật khẩu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<script>
+    document.getElementById("input_username").value = "<%= name %>";
+    document.getElementById("input_email").value = "<%= email %>";
+    document.getElementById("input_ID").value = '<%= id %>';
+    function submitForm(){
+        document.getElementById("formModified").submit();
+    }
+</script>
+</body>
+</html>

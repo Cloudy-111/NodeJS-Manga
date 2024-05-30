@@ -1,0 +1,132 @@
+<header class = "header_nav">
+    <nav class = "navbar">
+        <div class="nameWeb">
+            <a href="/"><img src="/assest/logo.png" alt="Logo"></a>
+            <p>Web Name</p>
+        </div>
+        <div class = "navbar_searchbox">
+            <form action="/searchResult" method="get" onsubmit="return validateSearch()">
+                <input id="keywordSearch" name="keywordSearch" type="text" placeholder="Tìm kiếm...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        <div class="navbar_menu">
+            <ul class="navbar_listMenu">
+                <li id="contact"><a class="navbar_link" href="#">Liên hệ</a></li>
+                <li id="category"><a class="navbar_link" href="/category">Thể loại</a></li>
+                <li id="notification"><a class="navbar_link" href="#">Thông báo</a></li>
+            </ul>
+        </div>
+        <div class="navbar_avatar" onclick="toggleMenu()">
+            <div class="navbar_linkAvatar" id="menu-button"><i class="fas fa-user"></i></div>
+        </div>
+    </nav>
+
+    <!-- Danh sách thể loại -->
+    <div class="category_list">
+        <table id="table_list">
+            <tbody>
+                <!-- Thêm dữ liệu vào đây -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Menu khi nhấn vào Avatar -->
+    <div class="sub_menu" id="subMenu">
+        <div class="menu">
+            <a href="/account">
+                <div class="user_infor">
+                    <div class="user_ava"></div>
+                    <% if (name) { %>
+                        <h2><%= name %></h2>
+                    <% } else { %>
+                        <h2>there</h2>
+                    <% } %>
+                </div>
+            </a>
+            <hr>
+            <a href="/setting" class="sub_menu_link">
+                <p>Cài đặt</p>
+                <span>></span>
+            </a>
+            <a href="#" class="sub_menu_link">
+                <p>Trợ giúp</p>
+                <span>></span>
+            </a>
+            <a href="#" class="sub_menu_link">
+                <p>Tải lên</p>
+                <span>></span>
+            </a>
+            <a href="#" class="sub_menu_link">
+                <form action="/logout?_method=DELETE" method="POST">
+                    <button class="navbar_link" type="submit">Đăng xuất</button>
+                </form>
+                <span>></span>
+            </a>
+        </div>
+    </div>
+</header>
+
+
+<script>
+// nhấn vào button thì ẩn hiện menu, nhấn ra ngoài cũng ẩn menu đó
+$('#menu-button').click(function(e){
+    e.stopPropagation();
+    $('#subMenu').toggleClass('open_menu');
+});
+
+$('#subMenu').click(function(e){
+    e.stopPropagation();
+});
+
+$('body,html').click(function(e){
+   $('#subMenu').removeClass('open_menu');
+});
+
+//Validate ô Search, nên thêm các định dạng vào để an toàn bảo mật, tránh gây sự cố 
+function validateSearch(){
+    var keyword = document.getElementById('keywordSearch').value.trim();
+    if(keyword === ''){
+        alert('Cần nhập từ khóa!');
+        return false;
+    }
+    return true;
+}
+
+// Tạo bảng cho danh sách thể loại
+const categoryList = ["Action","Adventure","Comedy","Drama","Fantasy","Historical","Misterious","Romance","Sports","Trinh thám","Sách khoa học","Sách kinh tế","Sách tham khảo","Giáo dục"];
+// Tạm thời đặt là danh sách cứng, sau sẽ lấy từ CSDL
+const categoryListSize = categoryList.length;
+
+var tbody = document.querySelector('#table_list tbody');
+
+for(let i = 0; i < categoryListSize; i++){
+    if (i % 5 == 0){
+        var newRow = document.createElement('tr');
+        tbody.appendChild(newRow);
+    }
+    var newCell = document.createElement('td');
+    newCell.textContent = categoryList[i];
+    newRow.appendChild(newCell);
+}
+
+
+// Hover vào tag thể loại thì hiện ra danh sách các thẻ loại
+document.getElementById('category').addEventListener('mouseover', function(){
+    document.getElementById('table_list').classList.add('active');
+})
+
+document.getElementById('category').addEventListener('mouseout', function(){
+    
+})
+
+document.getElementById('table_list').addEventListener('mouseover', function(){
+    document.getElementById('table_list').classList.add('active');
+})
+
+document.getElementById('table_list').addEventListener('mouseout', function(){
+    document.getElementById('table_list').classList.remove('active');
+})
+
+
+</script>

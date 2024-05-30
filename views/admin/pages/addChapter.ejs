@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../patials/head"); %>
+    <title>Add New Chapter</title>
+    <link href="/styleAddChapter/style.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../patials/header'); %>
+    <main>
+        <div class="container_content">
+            <%- include('../patials/leftNavbar'); %>
+            <div class="main_content">
+                <div class="section_information">
+                    <div class="infor_chapter">
+                        <form action="/adminDashboard/<%= idStory %>/<%= titleStory %>/addNewChapter" method="post" id="formAddNewChapter" enctype="multipart/form-data">
+                            <label>Tên chương: <input type="text" name="nameChapter" id="nameChapter" value=""></label>
+                            <input type="hidden" name="idStory" id="idStory" value="<%= idStory %>"/> 
+                            <input type="file" id="uploadImage" name="uploadImage" accept="image/*" multiple style="display: none;">
+                        </form>
+                    </div>
+                    <div class="addImage" id="addImage">
+                        <div class="imagePreview" id="imagePreview">
+                            
+                        </div>
+                        <button id="addImage" onclick="document.getElementById('uploadImage').click();">Upload Image</button>
+                    </div>
+                    <button type="submit" id="addChapterBtn" onclick="submitForm()">ADD CHAPTER</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        //------------------------------UPLOAD MULTIPLE IMAGE------------------------------
+        document.getElementById("uploadImage").addEventListener("input", function() {
+            var fileInput = this;
+            var imagePreview = document.getElementById("imagePreview");
+            var files = fileInput.files;
+            
+            if (files.length > 0) {
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var reader = new FileReader();
+                    
+                    reader.onload = (function(file) {
+                        return function(event) {
+                            var divImgElement = document.createElement("div");
+                            divImgElement.classList.add("imgDiv");
+
+                            // Tạo một thẻ img mới để hiển thị ảnh
+                            var imgElement = document.createElement("img");
+                            imgElement.src = event.target.result;
+
+                            //Nút xóa cho mỗi ảnh
+                            var divImgElement_delBtn = document.createElement("i");
+                            divImgElement_delBtn.classList.add("fa", "fa-times-circle");
+                            divImgElement_delBtn.style.cursor = "pointer";
+                            
+                            divImgElement.appendChild(imgElement);
+                            divImgElement.appendChild(divImgElement_delBtn);
+
+                            // Tạo một hàm xử lý sự kiện click riêng biệt cho mỗi nút xóa
+                            (function(imgElement) {
+                                divImgElement_delBtn.addEventListener("click", function() {
+                                    imagePreview.removeChild(divImgElement);
+                                });
+                            })(imgElement);
+
+                            // Thêm divImg vào vùng xem trước
+                            imagePreview.appendChild(divImgElement);
+                        };
+                    })(file);
+                    
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                // Người dùng chưa chọn tệp
+                console.log("Bạn chưa chọn tệp ảnh.");
+            }
+        });
+
+        //------------------------------SUBMIT FORM------------------------------
+        function submitForm(){
+            document.getElementById("formAddNewChapter").submit();
+        }
+    </script>
+</body>
+</html>

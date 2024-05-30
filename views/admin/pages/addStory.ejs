@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../patials/head"); %>
+    <title>Add Story</title>
+    <link href="/styleAddStory/style.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../patials/header'); %>
+    <main>
+        <div class="container_content">
+            <%- include('../patials/leftNavbar'); %>
+            <div class="main_content">
+                <div class="section_information">
+                    <div class="cover_story">
+                        <img id="imagePreview" src="">
+                        
+                        <button id="uploadImageFromPC" onclick="document.getElementById('uploadImage').click();">Upload Image</button>
+                    </div>
+                    <div class="infor_story">
+                        <form action="/adminDashboard/addNewStory" method="post" id="formAdd" enctype="multipart/form-data">
+                            
+                            <input type="file" id="uploadImage" name="uploadImage" accept="image/*" style="display: none;">
+                            <label>Tên truyện: <input type="text" name="title" id="title" value=""></label>
+                            <label>Tác giả: <input type="text" name="author" id="author" value=""></label>
+                            
+                            <label>
+                                Tóm tắt: 
+                                <textarea name="description"></textarea>
+                            </label>
+                        </form>
+                        <button type="submit" id="updateInfor" onclick="submitForm()">ADD</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+
+        //------------------------------UPLOAD IMAGE------------------------------
+        document.getElementById("uploadImage").addEventListener("change", function() {
+            var fileInput = this;
+            var imagePreview = document.getElementById("imagePreview");
+            var file = fileInput.files[0];
+            
+            if (file) {
+                // Tạo một đường dẫn URL tạm thời cho tệp ảnh
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    // Hiển thị ảnh trong thẻ img
+                    imagePreview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Người dùng chưa chọn tệp
+                console.log("Bạn chưa chọn tệp ảnh.");
+            }
+        });
+
+        //------------------------------SUBMIT FORM------------------------------
+        function submitForm(){
+            
+            document.getElementById("formAdd").submit();
+        }
+    </script>
+</body>
+</html>

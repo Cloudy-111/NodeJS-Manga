@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+*{
+    font-family: "Be Vietnam Pro", sans-serif;
+}
+
+h2{
+    color: black;
+}
+
+.container_account{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    background-color: var(--body-color);
+}
+
+.main_content{
+    position: relative;
+    font-size: var(--fs-small);
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    width: 75%;
+    background-color: var(--body-color-secondary-1);
+    margin: 10px 10px 10px;
+    border-radius: 10px;
+}
+
+.image_overlay{
+    background-image: url("/assest/background_overlay_account.jpg");
+    width: 100%;
+    height: 30%;
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+    border-radius: 10px;
+    box-shadow: var(--boxshadow);
+}
+
+.avatar_field{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 10%;
+    padding: 20px 50px 0 50px;
+    gap: 40px;
+    background-image: url("/assest/Gradient_card_blur.png");
+    background-position: center;
+    background-size: cover;
+    border-radius: 15px;
+    box-shadow: var(--boxshadow);
+    z-index: 1;
+    .image_ava{
+        background-image: url("/assest/Avatar.jpg");
+        width: 400px;
+        height: 400px;
+        background-position: center;
+        background-size: cover;
+        border-radius: 50%;
+        border: 5px solid;
+        box-shadow: var(--boxshadow);
+    }
+    .change_image button{
+        padding: 10px;
+        border-radius: 15px;
+        background-color: var(--button-change-background-color);
+        border: none;
+        color: var(--text-color);
+        box-shadow: var(--boxshadow);
+        transition: var(--tran-04);
+    }
+
+    .change_image button:hover{
+        box-shadow: var(--boxshadow-hover);
+    }
+    
+    .change_image button:active{
+        box-shadow: var(--boxshadow-active);
+        outline: none;
+        border-color: transparent;
+    }
+}
+
+
+.modified_box{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 10%;
+    width: 60%;
+    border-radius: 10px;
+    z-index: 2;
+    p{
+        color: black;
+    }
+}
+
+.modified_box form{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 20px;
+    input{
+        outline-color: var(--outline-color);
+        color: black;
+        width: 100%;
+        padding: 10px 0 10px 10px;
+        border: solid 1px;
+        border-radius: 10px;
+        background-color: var(--input-background-color);
+        border-color: var(--input-border-color);
+        transition: var(--tran-04);
+    }
+}
+
+.modified_box input:hover {
+    box-shadow: var(--input-boxshadow-hover);
+}
+
+.modified_box button{
+    margin-top: 10px;
+    border-radius: 20px;
+    color: black;
+    border: 1px solid;
+    box-shadow: var(--boxshadow);
+    transition: var(--tran-03);
+}
+
+.content_wrap{
+    border: 1px solid;
+    border-radius: 10px;
+    padding: 20px;
+    border: none;
+    width: 100%;
+    box-shadow: var(--boxshadow);
+    background-color: var(--box-backgroundcolor);
+}
+
+.content_wrap > hr{
+    height: 1px;
+    width: 100%;
+    padding: 10px 0 10px;
+    color: var(--submenu-text-color);
+    align-self: center;
+}
+
+.content_wrap .button_container{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10%;
+    button{
+        padding: 10px;
+        border: none;
+        color: var(--text-color);
+        transition: var(--tran-04);
+    }
+    #upd{
+        background-color: var(--button-change-background-color);
+    }
+    #chn{
+        background-color: var(--button-danger-background-color);
+    } 
+    button:hover{
+        box-shadow: var(--boxshadow-hover);
+    }
+    
+    button:active{
+        box-shadow: var(--boxshadow-active);
+        outline: none;
+        border-color: transparent;
+    }
+}
+

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>List User</title>
+    <%- include("../patials/head"); %>
+</head>
+<body>
+    <h1>List Of All User</h1>
+    <div class="listUser" id="listUser">
+        <h2>list</h2>
+    </div>
+</body>
+<script>
+    var listUser = JSON.parse('<%- JSON.stringify(listUser) %>');
+    let listAllUser = document.getElementById('listUser');
+    const listLength = listUser.length;
+    for(let i = 0; i < listLength; i++){
+        listAllUser.innerHTML += `<div class="user">
+                            <div>${listUser[i].Email}</div>
+                            <div>${listUser[i].Username}</div>
+                        </div>
+                        `;
+        console.log(listUser[i].Username);
+    }
+</script>
+</html>

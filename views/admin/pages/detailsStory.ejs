@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../patials/head"); %>
+    <title>Document</title>
+    <link href="/styleDetailStoryAdmin/style.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../patials/header'); %>
+    <main>
+        <div class="container_content">
+            <%- include('../patials/leftNavbar'); %>
+            <div class="main_content">
+                <div class="section_information">
+                    <div class="story">
+                        <div class="cover_story">
+                            <img id="imagePreview" src="<%= storyData.ImagePath%>">
+                            
+                            <button id="changeImage" onclick="document.getElementById('uploadImage').click();">Change Image</button>
+                        </div>
+                        <div class="infor_story">
+                            <form action="/adminDashboard/updateInforStory" method="post" id="formUpdate" enctype="multipart/form-data">
+                                <input type="hidden" name="idStory" value="<%= storyData.ID %>">
+                                <input type="file" id="uploadImage" name="uploadImage" accept="image/*" style="display: none;">
+                                <label class="inf">Tên truyện: <input type="text" name="title" id="title" value="<%= storyData.Title %>"></label>
+                                <label class="inf">Tác giả: <input type="text" name="author" id="author" value="<%= storyData.Author %>"></label>
+                                <label>
+                                    Thể loại:
+                                    <div class="listGenre" id="listGenre"></div>
+                                    <select id="genresSelect">
+                                        <option value="">Chọn thể loại</option>
+                                    </select>
+                                    <input type="hidden" name="listGenreString" id="listGenreString" value="">
+                                </label>
+                                <label>
+                                    Tóm tắt: 
+                                    <textarea name="description"><%= storyData.Description %></textarea>
+                                </label>
+                            </form>
+                            <button type="submit" id="updateInfor" onclick="submitForm()">Update Infor</button>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="title_section">Danh sách chương:</h3>
+                <div class="section_listChapter" id="listChapter"></div>
+                <div class="action">
+                    <button id="addChapterBtn">Add Chapter</button>
+                    <form action="/adminDashboard/<%= storyData.ID %>/<%= storyData.Title %>/addNewChapter" method="post" id="formAddNewChapter" style="display: none;">
+                        <label>Tên chương: <input type="text" name="nameChapter" id="nameChapter" value="" required></label>
+                        <input type="hidden" name="idStory" id="idStory" value="<%= storyData.ID %>" style="display: none;"/> 
+                        <button type="submit" id="addChapter">Thêm</button>
+                    </form>
+                </div>
+                <div class="section_comments"></div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // console.log(document.getElementById("imagePreview").src);
+        var storyData = JSON.parse('<%- JSON.stringify(storyData) %>');
+        var listGenre = JSON.parse('<%- JSON.stringify(listGenre) %>');
+        var allGenre = JSON.parse('<%- JSON.stringify(allGenre) %>');
+        var listChapter = JSON.parse('<%- JSON.stringify(listChapter) %>');
+
+        // Chi tiết mỗi thể loại để thêm vào list
+        var listGenre_div = document.getElementById("listGenre");
+        for(let i = 0; i < listGenre.length; i++){
+            var listGenre_div_item = document.createElement("div");
+            var listGenre_div_item_context = document.createElement("p");
+            var listGenre_div_item_delBtn = document.createElement("i");
+
+            listGenre_div_item_context.textContent = listGenre[i].Name;
+
+            listGenre_div_item_delBtn.classList.add("fa", "fa-times-circle");
+            listGenre_div_item_delBtn.style.cursor = "pointer";
+            
+            listGenre_div_item.appendChild(listGenre_div_item_context);
+            listGenre_div_item.appendChild(listGenre_div_item_delBtn);
+            listGenre_div_item.classList.add("genreItem");
+            listGenre_div_item.id = listGenre[i].Name;
+            
+            
+            // Tạo một hàm xử lý sự kiện click riêng biệt cho mỗi nút xóa
+            (function(item) {
+                listGenre_div_item_delBtn.addEventListener("click", function() {
+                    listGenre_div.removeChild(item);
+                });
+            })(listGenre_div_item);
+            listGenre_div.appendChild(listGenre_div_item);
+        }
+
+        // Lựa chọn các thể loại
+        var genresSelect = document.getElementById("genresSelect");
+        for(let i = 0; i < allGenre.length; i++){
+            var opt = document.createElement("option");
+
+            opt.value = allGenre[i].Name;
+            opt.textContent = allGenre[i].Name;
+            genresSelect.appendChild(opt);
+        }
+
+        //------------------------------LIST GENRE DISPLAY FROM DROPDOWN------------------------------
+        genresSelect.addEventListener("change", function(){
+            var selectGenre = this.value;
+            if(selectGenre && !document.getElementById(selectGenre)){
+                var listGenre_div_item = document.createElement("div");
+                var listGenre_div_item_context = document.createElement("p");
+                var listGenre_div_item_delBtn = document.createElement("i");
+
+                listGenre_div_item_context.textContent = selectGenre;
+
+                listGenre_div_item_delBtn.classList.add("fa", "fa-times-circle");
+                listGenre_div_item_delBtn.style.cursor = "pointer";
+
+                listGenre_div_item.appendChild(listGenre_div_item_context);
+                listGenre_div_item.appendChild(listGenre_div_item_delBtn);
+                listGenre_div_item.classList.add("genreItem");
+                listGenre_div_item.id = selectGenre;
+
+
+                // Tạo một hàm xử lý sự kiện click riêng biệt cho mỗi nút xóa
+                (function(item) {
+                    listGenre_div_item_delBtn.addEventListener("click", function() {
+                        listGenre_div.removeChild(item);
+                    });
+                })(listGenre_div_item);
+                listGenre_div.appendChild(listGenre_div_item);
+            }
+        })
+        
+        //------------------------------UPLOAD IMAGE------------------------------
+        document.getElementById("uploadImage").addEventListener("change", function() {
+            var fileInput = this;
+            var imagePreview = document.getElementById("imagePreview");
+            var file = fileInput.files[0];
+            
+            if (file) {
+                // Tạo một đường dẫn URL tạm thời cho tệp ảnh
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    // Hiển thị ảnh trong thẻ img
+                    imagePreview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Người dùng chưa chọn tệp
+                console.log("Bạn chưa chọn tệp ảnh.");
+            }
+        });
+
+        var genreMap = {};
+        for(let i = 0; i < allGenre.length; i++){
+            genreMap[allGenre[i].Name] = allGenre[i].ID;
+        }
+
+        //------------------------------SUBMIT FORM------------------------------
+        function submitForm(){
+            var listGenreString = document.getElementById("listGenreString");
+            
+            listGenreString.value = "";
+            const lenListGenre_div = listGenre_div.childElementCount;
+            for(let i = 0; i < lenListGenre_div; i++){
+                listGenreString.value += genreMap[listGenre_div.children[i].querySelector("p").textContent];
+                if(i !==  lenListGenre_div -1)listGenreString.value += '.';
+            }
+            // console.log(listGenreString.value);
+            document.getElementById("formUpdate").submit();
+        }
+
+        //------------------------------ADD CHAPTER BUTTON------------------------------
+        document.getElementById("addChapterBtn").addEventListener("click", function() {
+            document.getElementById("formAddNewChapter").style.display = 'block';
+        })
+
+        //------------------------------LIST CHAPTER------------------------------
+        const section_listChapter = document.getElementById("listChapter");
+        for(let i = 0; i < listChapter.length; i++){
+            section_listChapter.innerHTML += `
+                    <div class="chapter">
+                        <a href="/adminDashboard/${storyData.ID}/${storyData.Title}/${listChapter[i].Title}">
+                            <p>${listChapter[i].Title}</p>
+                            <p>${listChapter[i].UpdateDate}</p>
+                        </a>
+                    </div>
+                `
+        }
+
+        //------------------------------TURN OFF SPELL CHECK FOR ALL INPUT------------------------------
+        var inputs = document.querySelectorAll('input');
+        inputs.forEach(function(input) {
+            input.setAttribute('spellcheck', 'false');
+            input.setAttribute('lang', 'vi');
+        });
+
+        var textareas = document.querySelectorAll('textarea');
+        textareas.forEach(function(textarea) {
+            textarea.setAttribute('spellcheck', 'false');
+            textarea.setAttribute('lang', 'vi');
+        });
+        
+        </script>
+    
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Search Result</title>
+    <link href="/styleSearchResult/style.css" type="text/css" rel="stylesheet">
+    <%- include("../patials/head"); %>
+</head>
+<body>
+    <%- include('../patials/header'); %>
+    <main>
+        <div class="container_searchResult">
+            <%- include('../patials/leftNavbar'); %>
+            <div class="main_content">
+                <div class="result_state"><%- notification %></div>
+                <div class="all_books">
+                    <div class="all_book_cards" id="list_book_card"></div>
+                    <div class="pagination_all_books">
+                        <div class="button_pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        var list_OfList_GenreOfEachStory = JSON.parse('<%- JSON.stringify(list_OfList_GenreOfEachStory) %>');
+        var stories = JSON.parse('<%- JSON.stringify(stories) %>');
+        const lengthDataStory = stories.length;
+        const tableSize = 15;
+        var start_index = 1;
+        var end_index = 0;
+        var current_index = 1;
+        var max_index = 0;
+
+        function preLoadCalculator(){
+            max_index = lengthDataStory / tableSize;
+            if(lengthDataStory % tableSize > 0){
+                max_index += 1;
+            } 
+        }
+
+        function displayPage(){
+            var tab_start = start_index - 1;
+            var tab_end = end_index;
+            let list_book_card = document.getElementById('list_book_card');
+            list_book_card.innerHTML = '';
+            for(let i = tab_start; i < tab_end; i++){
+                list_book_card.innerHTML += `
+                    <div class="book_card" id="book_card">
+                        <div class="book_card_container">
+                            <a href="#"><img src="${stories[i].ImagePath}" alt="Book Card Sample ${i}"/></a>
+                            <div class="title_book">
+                                <p>${stories[i].Title}</p>
+                            </div>
+                        </div>
+                        <div class="book_card_tooltip_container">
+                            <label for="nameBook">Tên:</label>
+                            <p id="nameBook">${stories[i].Title}</p>
+                            <label for="nameBook">Tác giả:</label>
+                            <p id="nameBook">${stories[i].Author}</p>
+                            <label for="descrBook">Mô tả:</label>
+                            <p id="descrBook">${stories[i].Description}</p>
+                            <label for="numChapter">Số chương:</label>
+                            <p id="numChapter">${stories[i].ChapterCount}</p>
+                            <label for="genres${i}">Thể loại:</label>
+                            <div class="genresList" id="genres${i}"></'div>
+                        </div>
+                    </div>
+                `;
+                // Thêm các thể loại vào mỗi truyện, lấy từ CSDL
+                var genresList = document.getElementById(`genres${i}`);
+                for(let j = 0; j < list_OfList_GenreOfEachStory[i].length; j++){
+                    genresList.innerHTML += `
+                        <div class="itemGenres"><a class="cardALinkGenres" href='/category/${list_OfList_GenreOfEachStory[i][j].Name}'>${list_OfList_GenreOfEachStory[i][j].Name}</a></div>
+                    `;
+                }
+            }
+            // Màu ngẫu nhiên cho mỗi thể loại
+            var colors = ["#ce3c3c", "#ceac3c", "#9bce3c", "#3cce54", "#3cc9ce", "#3c7bce", "#573cce", "#ac3cce", "#ce3cc2", "#ce3c68"];
+    
+            function getRandomColor() {
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+    
+            var itemGenres = document.querySelectorAll('.itemGenres');
+    
+            itemGenres.forEach(function(item) {
+                item.style.backgroundColor = getRandomColor();
+            });
+            //Sau khi load lại danh sách, thêm lại Tooltip
+            tooltipEffect();
+        }
+
+
+        //Các nút phân trang cho hiển thị danh sách truyện
+
+        function displayPagination(){
+            preLoadCalculator();
+            let btn_pages = document.querySelector('.button_pagination');
+            btn_pages.innerHTML += `
+                <button class="prev_page" onclick="prevPage();"><</button>
+                <div class="btn_pages"></div>
+                <button class="next_page" onclick="nextPage();">></button>
+            `;
+            let pages = document.querySelector('.btn_pages');
+            for(let i = 1; i <= max_index; i++){
+                pages.innerHTML += `<button index='${i}' onclick="indexPage(${i})">${i}</button>`;
+            }
+        }
+        hightlightBtnPage();
+
+        if(lengthDataStory > tableSize)displayPagination();
+
+        function hightlightBtnPage(){
+            start_index = ((current_index - 1) * tableSize) + 1;
+            end_index = (start_index + tableSize) - 1;
+            if(end_index > lengthDataStory){
+                end_index = lengthDataStory;
+            }
+
+            $('.button_pagination button').removeClass('active');
+            $(`.button_pagination button[index='${current_index}']`).addClass('active');
+            
+            displayPage();
+        }
+
+        function nextPage(){
+            if(current_index < max_index - 1){
+                current_index += 1;
+                hightlightBtnPage();
+            }
+            
+        }
+        function prevPage(){
+            if(current_index > 1){
+                current_index -= 1;
+                hightlightBtnPage();
+            }
+        }
+        function indexPage(idx){
+            current_index = idx;
+            hightlightBtnPage();
+        }
+
+        // Fix lỗi tooltip bị quá màn hình khi ở bên phải, khi hover vào element mà tooltip bị quá thì chuyển sang trái
+        function tooltipEffect(){
+            const book_cards = document.querySelectorAll('.book_card');
+            book_cards.forEach(book_card => {
+                const tooltip = book_card.querySelector('.book_card_tooltip_container');
+    
+                const tooltipRect = tooltip.getBoundingClientRect();
+                const viewportWidth = window.innerWidth;
+    
+                if(tooltipRect.right + 320 > viewportWidth)tooltip.classList.add('left')
+                else tooltip.classList.add('right');
+    
+                book_card.addEventListener('mouseenter', function() {
+                    tooltip.classList.add('hover');
+                })
+    
+                book_card.addEventListener('mouseleave', function() {
+                    tooltip.classList.remove('hover');
+                })
+            })
+        }
+    </script>
+</body>
+</html>

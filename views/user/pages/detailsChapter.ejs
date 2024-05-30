@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("../patials/head"); %>
+    <title>Details Chapter</title>
+    <link href="/styleReadChapter/style.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../patials/header'); %>
+    <main>
+        <div class="container_content">
+            <div class="main_content">
+                <div class="section_header_chapter">
+                    <h2><%= nameChapter %></h2>
+                </div>
+                <div class="selectChapterHeader">
+                    <button class="naviBtn" id="prevChapter">
+                        Chap trước
+                    </button>
+                    <select class="selectChapter" id="selectChapter">
+                        <!-- <option value=""><%= nameChapter %></option> -->
+                    </select>
+                    <button class="naviBtn" id="nextChapter">
+                        Chap sau
+                    </button>
+                </div>
+                <div class="sectionReadStory">
+                    <div class="listImageinChap" id="listImageinChap">
+    
+                    </div>
+                </div>
+                <div class="selectChapterFooter">
+                    <div class="buttonNavigation">
+                        <button class="naviBtn" id="prevChapter">
+                            Chap trước
+                        </button>
+                        <button class="naviBtn" id="returnBackStory">
+                            Quay về truyện
+                        </button>
+                        <button class="naviBtn" id="nextChapter">
+                            Chap sau
+                        </button>
+                    </div>
+                    <select class="selectChapter" id="selectChapter">
+                        <!-- <option value=""><%= nameChapter %></option> -->
+                    </select>
+                </div>
+
+                <div class="section_comments">
+                    <div class="input_comment">
+                        <h4>Nhận xét của độc giả</h4>
+                        <form id="form_add_comment">
+                            <textarea id="comment_context" name="comment" placeholder="Nhập bình luận của bạn"></textarea>
+                            <button>Gửi</button>
+                        </form>
+                    </div>
+                    <div id="message"></div>
+                    <div class="commentsList" id="commentList">
+                        <!-- <div class="commentItem">
+                            <div class="imageUser"></div>
+                            <div class="commentInfor">
+                                <div class="comment_author">
+                                    <div class="usernameComment"></div>
+                                    <div class="timeOfComment"></div>
+                                </div>
+                                <div class="comment_content"></div>
+                                <div class="comment_actions"></div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <script>
+        var listImageInChapter = JSON.parse('<%- JSON.stringify(listImageInChapter) %>');
+        var listChapter = JSON.parse('<%- JSON.stringify(listChapter) %>');
+        var idStory = JSON.parse('<%- JSON.stringify(idStory) %>');
+        var titleStory = JSON.parse('<%- JSON.stringify(titleStory) %>');
+        var nameChapter = JSON.parse('<%- JSON.stringify(nameChapter) %>');
+
+        // listImageInChapter.sort(function(a, b) {
+        //     return a.filename.localeCompare(b.filename);
+        // });
+
+        var listImage = document.getElementById("listImageinChap");
+        for(let i = 0; i < listImageInChapter.length; i++){
+            let divImgElement = document.createElement("div");
+            divImgElement.classList.add("imgDiv");
+
+            // Tạo một thẻ img mới để hiển thị ảnh
+            let imgElement = document.createElement("img");
+            imgElement.src = listImageInChapter[i].path;
+                        
+            divImgElement.appendChild(imgElement);
+
+            // Thêm divImg vào vùng xem trước
+            listImage.appendChild(divImgElement);
+        }
+
+        //------------------------------LIST CHAPTER DROPDOWN------------------------------
+        const selectChapters = document.querySelectorAll("#selectChapter");
+        selectChapters.forEach((selectChapter) => {
+
+            selectChapter.addEventListener("change", function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const selectedChapter = selectedOption.value;
+                if (selectedChapter) {
+                    window.location.href = `/category/${idStory}/${titleStory}/${selectedChapter}`;
+                }
+            });
+    
+            for(let i = 0; i < listChapter.length; i++){
+                var opt = document.createElement("option");
+                if(listChapter[i].Title !== nameChapter){
+                    opt.value = listChapter[i].Title;
+                    opt.textContent = listChapter[i].Title;
+                } else{
+                    opt.value = "";
+                    opt.textContent = nameChapter;
+                    opt.selected = true;
+                }
+                selectChapter.appendChild(opt);
+            }
+        })
+
+        //------------------------------RETURN BACK TO STORY------------------------------
+        const returnBackStoryBtn = document.getElementById("returnBackStory");
+        returnBackStoryBtn.onclick = () => {
+            window.location.href = `/category/${idStory}/${titleStory}`;
+        }
+
+        const prevChapterBtns = document.querySelectorAll("#prevChapter");
+        const nextChapterBtns = document.querySelectorAll("#nextChapter");
+        const chapterIndex = listChapter.findIndex(chapter => chapter.Title === nameChapter);
+        prevChapterBtns.forEach((prevChapterBtn) => {
+            if(chapterIndex === 0){
+                prevChapterBtn.classList.add("disabled");
+            } else {
+                prevChapterBtn.classList.remove("disabled");
+                prevChapterBtn.onclick = () => {
+                    window.location.href = `/category/${idStory}/${titleStory}/${listChapter[chapterIndex - 1].Title}`;
+                }
+            }
+        })
+        
+        nextChapterBtns.forEach((nextChapterBtn) => {
+            if(chapterIndex === listChapter.length - 1){
+                nextChapterBtn.classList.add("disabled");
+            } else{
+                nextChapterBtn.classList.remove("disabled");
+                nextChapterBtn.onclick = () => {
+                    window.location.href = `/category/${idStory}/${titleStory}/${listChapter[chapterIndex + 1].Title}`;
+                }
+            }   
+        })
+
+        //------------------------------ADD COMMENT------------------------------
+        var commentsList = document.getElementById("commentList");
+        document.getElementById("form_add_comment").addEventListener("submit", function(){
+            event.preventDefault();
+            var comment = document.getElementById("comment_context");
+            var commentContext = comment.value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/<%= idStory %>/<%= titleStory %>/<%= idChapter %>/comment", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // document.getElementById("message").innerText = "Bình luận đã được gửi!";
+                        var dateNow = new Date();
+
+                        var day = dateNow.getDate().toString().padStart(2, '0');
+                        var month = (dateNow.getMonth() + 1).toString().padStart(2, '0');
+                        var year = dateNow.getFullYear().toString();
+                        var hours = dateNow.getHours().toString().padStart(2, '0');
+                        var minutes = dateNow.getMinutes().toString().padStart(2, '0');
+
+                        // Tạo chuỗi theo định dạng "dd:MM:yyyy hh:mm:ss"
+                        var formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+                        
+                        commentsList.innerHTML += `
+                            <div class="commentItem">
+                                <div class="imageUser"></div>
+                                <div class="commentInfor">
+                                    <div class="comment_author">
+                                        <div class="usernameComment"><%= name %></div>
+                                        <div class="timeOfComment">${formattedDate}</div>
+                                    </div>
+                                    <div class="comment_content">${commentContext}</div>
+                                    <div class="comment_actions"></div>
+                                </div>
+                            </div>
+                        `;
+                        comment.value = "";
+                    } else {
+                        // Xử lý lỗi từ server
+                        // document.getElementById("message").innerText = "Đã xảy ra lỗi khi gửi bình luận.";
+                    }
+                }
+            };
+            xhr.send(JSON.stringify({ comment: commentContext }));
+        })
+
+        //------------------------------LIST COMMENT------------------------------
+        var allComment = JSON.parse('<%- JSON.stringify(allComment) %>');
+        
+        for(let i = 0; i < allComment.length; i++) {
+            
+            commentsList.innerHTML += `
+                <div class="commentItem">
+                    <div class="imageUser"></div>
+                    <div class="commentInfor">
+                        <div class="comment_author">
+                            <div class="usernameComment">${allComment[i].Username}</div>
+                            <div class="timeOfComment">${allComment[i].PostDate}</div>
+                        </div>
+                        <div class="comment_content">${allComment[i].Content}</div>
+                        <div class="comment_actions"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+    </script>
+</body>
+</html>
